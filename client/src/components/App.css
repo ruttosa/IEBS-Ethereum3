@@ -192,3 +192,23 @@ button {
   display: inline;
   margin-right: 30px;
 }
+
+/* ------------------------------------------------------------ */
+/* ---------------------- COURSES STYLES ---------------------- */
+/* ------------------------------------------------------------ */
+
+.Menu-Container{
+  margin-top: 0.65em;
+  margin-bottom: 1.65em;
+  padding-left: 1.25em;
+  padding-right: 1.25em;
+  background: #365f7c;
+  color: aliceblue;
+  box-shadow: 0px 2px 12px grey;
+}
+.m-top{
+  margin-top: 2em;
+}
+.Card-Header{
+  padding: 1em;
+}

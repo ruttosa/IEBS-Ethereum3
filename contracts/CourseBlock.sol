@@ -5,11 +5,17 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import {Course, CourseUnit, UnitLesson} from "./CourseBlockStructs.sol";
 
 contract CourseBlock is ERC721, ERC721Enumerable, AccessControl {
     using Counters for Counters.Counter;
-
+    // Estructura para almacenar el detalle de los cursos
+    struct Course {
+        string title;
+        string description;
+        uint price;
+        string content;
+        uint creationDate;
+    }
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     Counters.Counter private _tokenIdCounter;
     mapping (uint256=>Course) private NftCoursesDetails;
@@ -17,29 +23,7 @@ contract CourseBlock is ERC721, ERC721Enumerable, AccessControl {
     constructor() ERC721("CourseBlock", "CBK") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
-        // createMockupCourse(msg.sender);
     }
-
-    // Crear curso de prueba
-    /* function createMockupCourse(address user) private {
-        UnitLesson memory lesson1 = UnitLesson("Lesson 1", "Lesson 1 Description", "ARTICLE", "Lesson 1 IPFS address");
-        UnitLesson memory lesson2 = UnitLesson("Lesson 2", "Lesson 2 Description", "ARTICLE", "Lesson 2 IPFS address");
-        UnitLesson[] memory unit1Lessons = new UnitLesson[](2);
-        unit1Lessons[0] = lesson1;
-        unit1Lessons[1] = lesson2;
-        CourseUnit memory unit1 = CourseUnit("Unit 1", "Unit 1 Description", block.timestamp, unit1Lessons);
-        UnitLesson memory lesson3 = UnitLesson("Lesson 1", "Lesson 1 Description", "ARTICLE", "Lesson 1 IPFS address");
-        UnitLesson memory lesson4 = UnitLesson("Lesson 2", "Lesson 2 Description", "ARTICLE", "Lesson 2 IPFS address");
-        UnitLesson[] memory unit2Lessons = new UnitLesson[](2);
-        unit2Lessons[0] = lesson3;
-        unit2Lessons[1] = lesson4;
-        CourseUnit memory unit2 = CourseUnit("Unit 2", "Unit 2 Description", block.timestamp, unit2Lessons);
-        CourseUnit[] memory courseUnits = new CourseUnit[](2);
-        courseUnits[0] = unit1;
-        courseUnits[1] = unit2;
-        Course memory mockupCourse = Course("Course Title", block.timestamp, 100, courseUnits);
-        createCourseToken(user, mockupCourse);
-    } */
 
     // Permitir añadir usuarios al rol de MINTER
     function grantMinterRole(address _address) public {
@@ -61,20 +45,19 @@ contract CourseBlock is ERC721, ERC721Enumerable, AccessControl {
     }
 
     // Obtener dellate del curso
-    function createCourseToken(address user, uint256 courseTokenId) public view returns(Course memory) {
+    function getCourseDetail(address user, uint256 courseTokenId) public view returns(Course memory) {
         require(_isApprovedOrOwner(user, courseTokenId), 'El usuario no tiene acceso al curso');
         return NftCoursesDetails[courseTokenId];
     }
 
     // Obtener cursos
-    function getAllMyCourses(address owner) public view returns (uint256[] memory) {
+    function getAllMyCourses(address owner) public view returns (Course[] memory) {
         uint tokenCount = balanceOf(owner);
-
-        uint256[] memory ownedTokens = new uint256[](tokenCount);
+        Course[] memory ownedTokens = new Course[](tokenCount);
         for (uint i = 0; i < tokenCount; i++) {
-            ownedTokens[i] = tokenOfOwnerByIndex(owner, i);
+            uint256 tokenId = tokenOfOwnerByIndex(owner, i);
+            ownedTokens[i] = getCourseDetail(owner, tokenId);
         }
-
         return ownedTokens;
     }
 
